@@ -1,0 +1,82 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hi
+    - hello
+    - hey
+    - good morning
+    - good evening
+    - hi there
+    - hello there
+
+- intent: ask_admission
+  examples: |
+    - how to take admission
+    - admission process
+    - when do admissions start
+    - how to apply
+    - admission requirements
+    - what is the admission procedure
+    - tell me about admissions
+
+- intent: ask_fees
+  examples: |
+    - what are the fees
+    - fee structure
+    - how much does it cost
+    - semester fees
+    - tuition fees
+    - course fees
+    - fee details
+
+- intent: ask_courses
+  examples: |
+    - what courses are available
+    - which programs do you offer
+    - tell me about courses
+    - available degrees
+    - courses offered
+    - what can I study
+
+- intent: ask_placement
+  examples: |
+    - placement record
+    - job opportunities
+    - placement percentage
+    - which companies visit
+    - average package
+    - placement details
+
+- intent: ask_scholarship
+  examples: |
+    - scholarships available
+    - financial aid
+    - fee waiver
+    - merit scholarship
+    - how to get scholarship
+
+- intent: ask_hostel
+  examples: |
+    - hostel facilities
+    - hostel fees
+    - accommodation
+    - hostel rooms
+    - is there hostel
+
+- intent: ask_library
+  examples: |
+    - library timings
+    - library facilities
+    - books available
+    - digital library
+    - study rooms
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - see you
+    - thanks bye
+    - thank you bye

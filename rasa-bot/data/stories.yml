@@ -1,0 +1,45 @@
+version: "3.1"
+
+stories:
+- story: greet and ask admission
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_admission
+  - action: utter_admission
+
+- story: ask fees directly
+  steps:
+  - intent: ask_fees
+  - action: utter_fees
+
+- story: ask courses
+  steps:
+  - intent: ask_courses
+  - action: utter_courses
+
+- story: ask placement
+  steps:
+  - intent: ask_placement
+  - action: utter_placement
+
+- story: ask scholarship
+  steps:
+  - intent: ask_scholarship
+  - action: utter_scholarship
+
+- story: say goodbye
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: interactive story
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_admission
+  - action: utter_admission
+  - intent: ask_fees
+  - action: utter_fees
+  - intent: goodbye
+  - action: utter_goodbye
