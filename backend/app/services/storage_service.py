@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -6,14 +7,17 @@ from threading import Lock
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
-from app.core.supabase_client import supabase
+from app.core.supabase_client import is_supabase_configured, supabase
+
+
+logger = logging.getLogger(__name__)
 
 
 class StorageService:
     def __init__(self) -> None:
-        self.use_supabase = (
-            settings.STORAGE_BACKEND.lower() == "supabase" and supabase is not None
-        )
+        backend_mode = settings.STORAGE_BACKEND.lower()
+        self.prefer_supabase = backend_mode in {"auto", "supabase"} and supabase is not None
+        self.require_supabase = backend_mode == "supabase"
         self._lock = Lock()
         self._db_path = Path(settings.LOCAL_DB_PATH)
         if not self._db_path.is_absolute():
@@ -40,18 +44,36 @@ class StorageService:
     def _timestamp(self) -> str:
         return datetime.now(timezone.utc).isoformat()
 
+    def get_storage_mode(self) -> str:
+        if self.prefer_supabase:
+            return "supabase"
+        if is_supabase_configured() and supabase is None:
+            return "supabase_unavailable"
+        return "local"
+
+    def _handle_supabase_error(self, exc: Exception, operation: str) -> None:
+        if self.require_supabase:
+            raise RuntimeError(f"Supabase {operation} failed: {exc}") from exc
+        logger.warning("Supabase %s failed, falling back to local storage: %s", operation, exc)
+
     def get_user_by_email(self, email: str) -> Optional[Dict[str, Any]]:
-        if self.use_supabase:
-            result = supabase.table("users").select("*").eq("email", email).execute()
-            return result.data[0] if result.data else None
+        if self.prefer_supabase:
+            try:
+                result = supabase.table("users").select("*").eq("email", email).execute()
+                return result.data[0] if result.data else None
+            except Exception as exc:
+                self._handle_supabase_error(exc, "read user by email")
 
         db = self._load_local_db()
         return next((user for user in db["users"] if user["email"] == email), None)
 
     def get_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
-        if self.use_supabase:
-            result = supabase.table("users").select("*").eq("id", user_id).execute()
-            return result.data[0] if result.data else None
+        if self.prefer_supabase:
+            try:
+                result = supabase.table("users").select("*").eq("id", user_id).execute()
+                return result.data[0] if result.data else None
+            except Exception as exc:
+                self._handle_supabase_error(exc, "read user by id")
 
         db = self._load_local_db()
         return next((user for user in db["users"] if user["id"] == user_id), None)
@@ -73,11 +95,14 @@ class StorageService:
             "created_at": self._timestamp(),
         }
 
-        if self.use_supabase:
-            result = supabase.table("users").insert(user).execute()
-            if not result.data:
-                raise ValueError("Registration failed")
-            return result.data[0]
+        if self.prefer_supabase:
+            try:
+                result = supabase.table("users").insert(user).execute()
+                if not result.data:
+                    raise ValueError("Registration failed")
+                return result.data[0]
+            except Exception as exc:
+                self._handle_supabase_error(exc, "create user")
 
         db = self._load_local_db()
         db["users"].append(user)
@@ -101,9 +126,12 @@ class StorageService:
             "created_at": self._timestamp(),
         }
 
-        if self.use_supabase:
-            supabase.table("chat_messages").insert(message).execute()
-            return message
+        if self.prefer_supabase:
+            try:
+                supabase.table("chat_messages").insert(message).execute()
+                return message
+            except Exception as exc:
+                self._handle_supabase_error(exc, "save chat message")
 
         db = self._load_local_db()
         db["chat_messages"].append(message)
@@ -111,11 +139,14 @@ class StorageService:
         return message
 
     def list_users(self) -> List[Dict[str, Any]]:
-        if self.use_supabase:
-            result = supabase.table("users").select(
-                "id, email, name, role, created_at"
-            ).execute()
-            return result.data
+        if self.prefer_supabase:
+            try:
+                result = supabase.table("users").select(
+                    "id, email, name, role, created_at"
+                ).execute()
+                return result.data
+            except Exception as exc:
+                self._handle_supabase_error(exc, "list users")
 
         db = self._load_local_db()
         return [
@@ -130,15 +161,18 @@ class StorageService:
         ]
 
     def list_messages(self, limit: int = 100) -> List[Dict[str, Any]]:
-        if self.use_supabase:
-            result = (
-                supabase.table("chat_messages")
-                .select("*")
-                .order("created_at", desc=True)
-                .limit(limit)
-                .execute()
-            )
-            return result.data
+        if self.prefer_supabase:
+            try:
+                result = (
+                    supabase.table("chat_messages")
+                    .select("*")
+                    .order("created_at", desc=True)
+                    .limit(limit)
+                    .execute()
+                )
+                return result.data
+            except Exception as exc:
+                self._handle_supabase_error(exc, "list messages")
 
         db = self._load_local_db()
         return list(reversed(db["chat_messages"]))[:limit]

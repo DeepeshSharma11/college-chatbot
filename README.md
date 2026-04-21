@@ -6,7 +6,7 @@ College helpdesk chatbot project built with:
 - `Next.js` frontend
 - `Rasa` intent bot
 - `GPT-2` fallback support
-- Local JSON storage by default
+- Supabase-first storage with local fallback
 
 This version is made submission-friendly. Even if Supabase or Rasa is not running, the chatbot still works with built-in college FAQ answers for common student queries like admissions, fees, courses, placements, hostel, scholarship, and library.
 
@@ -15,8 +15,8 @@ This version is made submission-friendly. Even if Supabase or Rasa is not runnin
 - Student registration and login with JWT auth
 - Chat API with hybrid response flow
 - `Rasa -> FAQ -> GPT-2 -> safe fallback` orchestration
-- Local storage for users and chat history
-- Optional Supabase support
+- Supabase-first storage for users and chat history
+- Automatic local fallback if Supabase is unavailable
 - Optional Docker setup
 - Ready frontend UI for demo
 
@@ -62,6 +62,8 @@ uvicorn app.main:app --reload
 ```
 
 Backend runs on `http://localhost:8000`
+
+If Supabase credentials are present in `backend/.env`, backend will use Supabase as the primary database automatically.
 
 ## Frontend Setup
 
@@ -141,14 +143,14 @@ docker-compose up --build
 
 By default this project uses:
 
-- `STORAGE_BACKEND=local`
+- `STORAGE_BACKEND=auto`
 - file path: `backend/data/local_db.json`
 
 This means:
 
-- no database setup required
-- users and messages are stored locally
-- project is easy to run for evaluation
+- if Supabase credentials are valid, data goes to Supabase first
+- if Supabase is unavailable, backend falls back to local JSON storage
+- project still works during demo even if cloud DB has a temporary issue
 
 Note:
 
@@ -163,6 +165,45 @@ SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_service_key
 SUPABASE_ANON_KEY=your_anon_key
 ```
+
+If you want automatic failover instead of strict Supabase-only mode:
+
+```env
+STORAGE_BACKEND=auto
+```
+
+## Supabase Migration
+
+Run this SQL in the Supabase SQL editor:
+
+- [backend/supabase/migrations/001_init_college_chatbot.sql](/abs/path/c:/Users/deepe/Desktop/college-chatbot/backend/supabase/migrations/001_init_college_chatbot.sql:1)
+
+This creates:
+
+- `users`
+- `chat_messages`
+- indexes for email and chat lookup
+
+## Local To Supabase Data Migration
+
+If you already have local data in `backend/data/local_db.json`, migrate it with:
+
+```bash
+cd backend
+venv\Scripts\activate
+python scripts/migrate_local_to_supabase.py
+```
+
+This script will upsert:
+
+- local users into Supabase `users`
+- local messages into Supabase `chat_messages`
+
+## Storage Modes
+
+- `auto`: Supabase primary, local fallback
+- `supabase`: Supabase only, fail if cloud DB is unavailable
+- `local`: local JSON only
 
 ## Sample Questions
 
@@ -201,6 +242,7 @@ You can customize:
 
 - If frontend opens but chat fails, make sure backend is running on port `8000`.
 - If Rasa is not running, chatbot will still work through FAQ fallback.
+- Check `GET /health` to confirm whether storage is running in `supabase`, `local`, or `supabase_unavailable` mode.
 - If `npm run build` fails on a different machine, first run `npm install`.
 - If backend import fails, recreate the virtual environment and install `requirements.txt` again.
 - If you want real college answers, update the FAQ content before demo.

@@ -1,4 +1,6 @@
 'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { api } from '@/lib/apiClient';
 
@@ -10,6 +12,7 @@ interface Message {
 }
 
 export default function ChatWindow() {
+    const router = useRouter();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -105,13 +108,61 @@ export default function ChatWindow() {
         'Hostel facilities batao',
     ];
 
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        router.push('/login');
+    };
+
+    const resetChat = () => {
+        setMessages([
+            {
+                id: '1',
+                role: 'bot',
+                text: 'Hello! I am your college chatbot. How can I help you today?',
+                timestamp: new Date(),
+            },
+        ]);
+        setError('');
+        setInput('');
+        inputRef.current?.focus();
+    };
+
     return (
         <div className="flex flex-col h-screen bg-gray-100">
             {/* Header */}
             <div className="bg-blue-600 text-white p-4 shadow-lg">
-                <div className="container mx-auto">
-                    <h1 className="text-2xl font-bold">🎓 College Chatbot</h1>
-                    <p className="text-sm text-blue-100">Ask me anything about college!</p>
+                <div className="container mx-auto flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold">🎓 College Chatbot</h1>
+                        <p className="text-sm text-blue-100">Ask me anything about college!</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <Link
+                            href="/"
+                            className="rounded-full border border-white/25 px-4 py-2 text-white transition hover:bg-white/10"
+                        >
+                            Home
+                        </Link>
+                        <Link
+                            href="/register"
+                            className="rounded-full border border-white/25 px-4 py-2 text-white transition hover:bg-white/10"
+                        >
+                            Register
+                        </Link>
+                        <button
+                            onClick={resetChat}
+                            className="rounded-full border border-white/25 px-4 py-2 text-white transition hover:bg-white/10"
+                        >
+                            New Chat
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="rounded-full bg-white px-4 py-2 font-medium text-blue-700 transition hover:bg-blue-50"
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </div>
             </div>
 

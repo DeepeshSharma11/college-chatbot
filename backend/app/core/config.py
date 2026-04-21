@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     RASA_URL: str = "http://localhost:5005"
     GPT2_MODEL_NAME: str = "gpt2"
-    STORAGE_BACKEND: str = "local"
+    STORAGE_BACKEND: str = "auto"
     LOCAL_DB_PATH: str = "data/local_db.json"
 
     class Config:

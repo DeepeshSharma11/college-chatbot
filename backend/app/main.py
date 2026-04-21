@@ -4,6 +4,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.api.routes import auth, chat, admin
+from app.services.storage_service import storage_service
 
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -35,4 +36,4 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "ok", "storage": storage_service.get_storage_mode()}
