@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,9 +16,19 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await api.login(email, password);
-            localStorage.setItem('access_token', response.access_token);
-            router.push('/chat');
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (signInError) throw signInError;
+            
+            if (data.session) {
+                localStorage.setItem('access_token', data.session.access_token);
+                router.push('/chat');
+            } else {
+                throw new Error('Login failed. No session available.');
+            }
         } catch (err: any) {
             setError(err.message || 'Login failed. Please check your credentials.');
         } finally {

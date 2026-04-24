@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/apiClient';
+import { supabase } from '@/lib/supabase';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -29,9 +29,22 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const response = await api.register(email, password, name);
-            localStorage.setItem('access_token', response.access_token);
-            router.push('/chat');
+            const { data, error: signUpError } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { name }
+                }
+            });
+
+            if (signUpError) throw signUpError;
+
+            if (data.session) {
+                localStorage.setItem('access_token', data.session.access_token);
+                router.push('/chat');
+            } else {
+                setError('Registration successful! Please check your email to verify your account.');
+            }
         } catch (err: any) {
             setError(err.message || 'Registration failed. Please try again.');
         } finally {

@@ -12,7 +12,7 @@ async def send_message(
     current_user=Depends(get_current_user)
 ):
     try:
-        # Get response via orchestrator (Rasa first, safe fallback)
+        # Get response via orchestrator (Groq first, safe fallback)
         bot_result = await get_bot_response(request.message, current_user["id"])
         response_text = bot_result["response"]
         response_source = bot_result["source"]

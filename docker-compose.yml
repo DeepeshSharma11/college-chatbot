@@ -5,16 +5,6 @@ services:
     ports:
       - "8000:8000"
     env_file: ./backend/.env
-    depends_on:
-      - rasa
-
-  rasa:
-    image: rasa/rasa:3.6.0
-    ports:
-      - "5005:5005"
-    volumes:
-      - ./rasa-bot:/app
-    command: run --enable-api --cors "*"
 
   frontend:
     build: ./frontend

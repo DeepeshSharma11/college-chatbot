@@ -1,7 +1,7 @@
 import logging
 
 from app.services.college_knowledge import DEFAULT_RESPONSE, find_faq_response
-from app.services.rasa_service import get_rasa_response
+from app.services.groq_service import get_groq_response
 from app.services.gpt2_service import get_gpt2_response
 
 logger = logging.getLogger(__name__)
@@ -30,15 +30,15 @@ def _looks_like_college_query(user_message: str) -> bool:
 
 
 async def get_bot_response(user_message: str, session_id: str) -> dict:
-    # Step 1: Try Rasa for intent-based response
+    # Step 1: Use Groq as primary LLM
     try:
-        rasa_result = await get_rasa_response(user_message, session_id)
-        if rasa_result and rasa_result.get("text"):
-            return {"response": rasa_result["text"], "source": "rasa"}
+        groq_result = await get_groq_response(user_message)
+        if groq_result and groq_result.get("text"):
+            return {"response": groq_result["text"], "source": "groq"}
     except Exception as e:
-        logger.warning(f"Rasa failed: {e}")
+        logger.warning(f"Groq failed: {e}")
 
-    # Step 2: Use built-in college FAQ when Rasa is unavailable or misses.
+    # Step 2: Use built-in college FAQ when Groq is unavailable or misses.
     faq_result = find_faq_response(user_message)
     if faq_result:
         return faq_result
