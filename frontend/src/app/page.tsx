@@ -3,7 +3,7 @@ import Link from 'next/link';
 const features = [
     'Student login and registration',
     'College FAQ chatbot for admissions, fees, courses, hostel, and placements',
-    'Rasa-first architecture with GPT-2 fallback support',
+    'Groq-first architecture with GPT-2 fallback support',
 ];
 
 export default function HomePage() {
@@ -18,7 +18,7 @@ export default function HomePage() {
                         College inquiries ke liye ek ready-to-demo AI chatbot
                     </h1>
                     <p className="mt-6 text-lg text-slate-200">
-                        Yeh project backend, frontend, aur Rasa bot ke saath bana hai.
+                        Yeh project backend aur frontend ke saath bana hai.
                         Aap isse apne college ke admission helpdesk, course guidance,
                         aur student support demo ke liye use kar sakte ho.
                     </p>

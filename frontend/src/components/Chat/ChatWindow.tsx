@@ -1,6 +1,9 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { api } from '@/lib/apiClient';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import Navbar from '../Layout/Navbar';
 
 interface Message {
     id: string;
@@ -85,7 +88,10 @@ export default function ChatWindow() {
             setMessages(prev => [...prev, errorMessage]);
         } finally {
             setLoading(false);
-            inputRef.current?.focus();
+            // On mobile devices, we probably don't want to auto-focus and open the keyboard again
+            if (window.innerWidth > 768) {
+                inputRef.current?.focus();
+            }
         }
     };
 
@@ -106,33 +112,44 @@ export default function ChatWindow() {
     ];
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            {/* Header */}
-            <div className="bg-blue-600 text-white p-4 shadow-lg">
-                <div className="container mx-auto">
-                    <h1 className="text-2xl font-bold">🎓 College Chatbot</h1>
-                    <p className="text-sm text-blue-100">Ask me anything about college!</p>
-                </div>
-            </div>
+        <div className="flex flex-col h-[100dvh] bg-gray-50">
+            {/* Header via Navbar */}
+            <Navbar />
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4">
-                <div className="container mx-auto max-w-4xl">
+            <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth">
+                <div className="container mx-auto max-w-4xl flex flex-col gap-4">
                     {messages.map((message) => (
                         <div
                             key={message.id}
-                            className={`flex mb-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'
-                                }`}
+                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                             <div
-                                className={`max-w-[70%] rounded-lg p-3 ${message.role === 'user'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white text-gray-800 shadow-md'
-                                    }`}
+                                className={`max-w-[90%] md:max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${
+                                    message.role === 'user'
+                                        ? 'bg-blue-600 text-white rounded-br-sm'
+                                        : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm'
+                                }`}
                             >
-                                <p className="text-sm">{message.text}</p>
-                                <p className={`text-xs mt-1 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-400'
-                                    }`}>
+                                <div className="prose prose-sm md:prose-base max-w-none">
+                                    {message.role === 'bot' ? (
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                                                ul: ({node, ...props}) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                                                ol: ({node, ...props}) => <ol className="list-decimal pl-4 mb-2" {...props} />,
+                                                li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                                                strong: ({node, ...props}) => <strong className="font-semibold text-gray-900" {...props} />
+                                            }}
+                                        >
+                                            {message.text}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        <p className="whitespace-pre-wrap">{message.text}</p>
+                                    )}
+                                </div>
+                                <p className={`text-[10px] md:text-xs mt-1.5 flex ${message.role === 'user' ? 'justify-end text-blue-200' : 'justify-start text-gray-400'}`}>
                                     {formatTime(message.timestamp)}
                                 </p>
                             </div>
@@ -140,30 +157,30 @@ export default function ChatWindow() {
                     ))}
 
                     {loading && (
-                        <div className="flex justify-start mb-4">
-                            <div className="bg-white rounded-lg p-3 shadow-md">
-                                <div className="flex space-x-2">
+                        <div className="flex justify-start">
+                            <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-4 shadow-sm">
+                                <div className="flex space-x-1.5">
                                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
                             {error}
                         </div>
                     )}
 
                     {messages.length === 1 && !loading && (
-                        <div className="mb-6 flex flex-wrap gap-2">
+                        <div className="mt-4 flex flex-wrap gap-2 justify-start">
                             {quickPrompts.map((prompt) => (
                                 <button
                                     key={prompt}
                                     onClick={() => setInput(prompt)}
-                                    className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-700 transition hover:bg-blue-100"
+                                    className="rounded-full border border-blue-200 bg-white px-3 md:px-4 py-2 text-xs md:text-sm text-blue-700 hover:bg-blue-50 transition-colors shadow-sm"
                                 >
                                     {prompt}
                                 </button>
@@ -171,35 +188,34 @@ export default function ChatWindow() {
                         </div>
                     )}
 
-                    <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef} className="h-1" />
                 </div>
             </div>
 
             {/* Input Area */}
-            <div className="bg-white border-t border-gray-200 p-4">
-                <div className="container mx-auto max-w-4xl">
-                    <div className="flex space-x-4">
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            placeholder="Type your message here..."
-                            disabled={loading}
-                            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                        />
-                        <button
-                            onClick={sendMessage}
-                            disabled={loading || !input.trim()}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {loading ? 'Sending...' : 'Send'}
-                        </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                        Powered by AI - Ask about courses, admissions, fees, and more!
-                    </p>
+            <div className="bg-white border-t border-gray-200 p-3 md:p-4 shrink-0 pb-safe">
+                <div className="container mx-auto max-w-4xl flex gap-2 md:gap-4 items-center">
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Type your message..."
+                        disabled={loading}
+                        className="flex-1 px-4 py-3 md:py-3.5 bg-gray-50 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:opacity-70 transition-all text-sm md:text-base"
+                    />
+                    <button
+                        onClick={sendMessage}
+                        disabled={loading || !input.trim()}
+                        className="p-3 md:px-6 md:py-3.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center justify-center shrink-0"
+                        aria-label="Send message"
+                    >
+                        <span className="hidden md:inline font-medium">Send</span>
+                        <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>

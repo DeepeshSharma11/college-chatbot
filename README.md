@@ -4,17 +4,17 @@ College helpdesk chatbot project built with:
 
 - `FastAPI` backend
 - `Next.js` frontend
-- `Rasa` intent bot
+- `Groq` primary LLM
 - `GPT-2` fallback support
 - Local JSON storage by default
 
-This version is made submission-friendly. Even if Supabase or Rasa is not running, the chatbot still works with built-in college FAQ answers for common student queries like admissions, fees, courses, placements, hostel, scholarship, and library.
+This version is made submission-friendly. Even if Supabase or Groq is not running, the chatbot still works with built-in college FAQ answers for common student queries like admissions, fees, courses, placements, hostel, scholarship, and library.
 
 ## Features
 
 - Student registration and login with JWT auth
 - Chat API with hybrid response flow
-- `Rasa -> FAQ -> GPT-2 -> safe fallback` orchestration
+- `Groq -> FAQ -> GPT-2 -> safe fallback` orchestration
 - Local storage for users and chat history
 - Optional Supabase support
 - Optional Docker setup
@@ -26,7 +26,6 @@ This version is made submission-friendly. Even if Supabase or Rasa is not runnin
 - Node.js `18+` or `20+`
 - npm
 - Optional: Docker Desktop
-- Optional: Rasa environment if you want intent training
 
 ## Project Structure
 
@@ -34,7 +33,6 @@ This version is made submission-friendly. Even if Supabase or Rasa is not runnin
 college-chatbot/
 ├── backend/
 ├── frontend/
-├── rasa-bot/
 ├── docker-compose.yml
 └── README.md
 ```
@@ -43,8 +41,8 @@ college-chatbot/
 
 When a student sends a message:
 
-1. Backend first tries `Rasa` for intent-based response.
-2. If Rasa is unavailable or does not match, backend checks the built-in college FAQ layer.
+1. Backend first tries `Groq` for primary response.
+2. If Groq is unavailable or does not match, backend checks the built-in college FAQ layer.
 3. If needed, it tries `GPT-2`.
 4. If everything else misses, it returns a safe college-related fallback response.
 
@@ -85,7 +83,6 @@ Every teammate can run the project locally with these steps:
 5. Install frontend dependencies.
 6. Start backend.
 7. Start frontend.
-8. Optional: start Rasa in a separate terminal.
 
 ### Terminal 1: Backend
 
@@ -102,26 +99,7 @@ cd frontend
 npm run dev
 ```
 
-### Terminal 3: Optional Rasa
-
-```bash
-cd rasa-bot
-rasa run --enable-api --cors "*"
-```
-
 Open `http://localhost:3000`
-
-## Rasa Setup
-
-Rasa is optional now, but if you want full intent classification:
-
-```bash
-cd rasa-bot
-rasa train
-rasa run --enable-api --cors "*"
-```
-
-Rasa runs on `http://localhost:5005`
 
 ## Docker Setup
 
@@ -135,7 +113,7 @@ docker-compose up --build
 2. Register a new user.
 3. Go to chat.
 4. Ask questions like fees, hostel, admission, or courses.
-5. If Rasa is not running, the built-in FAQ layer still answers.
+5. If Groq is not configured, the built-in FAQ layer still answers.
 
 ## Default Storage Mode
 
@@ -177,8 +155,6 @@ SUPABASE_ANON_KEY=your_anon_key
 Current college information is demo/sample data. Before final submission, replace it with your real college details in:
 
 - `backend/app/services/college_knowledge.py`
-- `rasa-bot/domain.yml`
-- `rasa-bot/data/nlu.yml`
 
 You can customize:
 
@@ -200,7 +176,7 @@ You can customize:
 ## Troubleshooting
 
 - If frontend opens but chat fails, make sure backend is running on port `8000`.
-- If Rasa is not running, chatbot will still work through FAQ fallback.
+- If Groq is not set up, chatbot will still work through FAQ fallback.
 - If `npm run build` fails on a different machine, first run `npm install`.
 - If backend import fails, recreate the virtual environment and install `requirements.txt` again.
 - If you want real college answers, update the FAQ content before demo.
@@ -215,8 +191,8 @@ The following checks were run successfully during setup:
 
 ## Suggested Submission Title
 
-`AI-Powered College Chatbot using FastAPI, Next.js, Rasa, and GPT-2`
+`AI-Powered College Chatbot using FastAPI, Next.js, Groq, and GPT-2`
 
 ## Short Documentation Summary
 
-This project is a hybrid college chatbot system designed to answer student queries. It uses Rasa for intent-based responses, GPT-2 for generative fallback, and a built-in FAQ layer for reliable college-specific answers. The backend is developed in FastAPI, the frontend in Next.js, and the system supports both local JSON storage and optional Supabase integration. It is suitable for admission helpdesk, college inquiry systems, and academic project submission.
+This project is a hybrid college chatbot system designed to answer student queries. It uses Groq for primary responses, GPT-2 for generative fallback, and a built-in FAQ layer for reliable college-specific answers. The backend is developed in FastAPI, the frontend in Next.js, and the system supports both local JSON storage and optional Supabase integration. It is suitable for admission helpdesk, college inquiry systems, and academic project submission.
