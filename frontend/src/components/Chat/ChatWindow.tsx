@@ -58,11 +58,6 @@ export default function ChatWindow() {
         setError('');
 
         const token = localStorage.getItem('access_token');
-        if (!token) {
-            setError('Please login again');
-            setLoading(false);
-            return;
-        }
 
         try {
             const response = await api.sendMessage(input, token);

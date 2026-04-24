@@ -36,13 +36,18 @@ export const api = {
     },
 
     // Send message
-    sendMessage: async (message: string, token: string) => {
+    sendMessage: async (message: string, token: string | null) => {
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+        
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${BASE_URL}/chat/message`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
+            headers,
             body: JSON.stringify({ message }),
         });
 

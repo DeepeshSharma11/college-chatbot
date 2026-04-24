@@ -29,10 +29,10 @@ def _looks_like_college_query(user_message: str) -> bool:
     return any(keyword in lowered for keyword in COLLEGE_INFO_KEYWORDS)
 
 
-async def get_bot_response(user_message: str, session_id: str) -> dict:
+async def get_bot_response(user_message: str, session_id: str, is_logged_in: bool = True) -> dict:
     # Step 1: Use Groq as primary LLM
     try:
-        groq_result = await get_groq_response(user_message)
+        groq_result = await get_groq_response(user_message, is_logged_in)
         if groq_result and groq_result.get("text"):
             return {"response": groq_result["text"], "source": "groq"}
     except Exception as e:

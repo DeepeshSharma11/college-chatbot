@@ -12,17 +12,21 @@ async def send_message(
     current_user=Depends(get_current_user)
 ):
     try:
+        user_id = current_user["id"] if current_user else "anonymous"
+        is_logged_in = bool(current_user)
+        
         # Get response via orchestrator (Groq first, safe fallback)
-        bot_result = await get_bot_response(request.message, current_user["id"])
+        bot_result = await get_bot_response(request.message, user_id, is_logged_in)
         response_text = bot_result["response"]
         response_source = bot_result["source"]
         
-        storage_service.save_chat_message(
-            user_id=current_user["id"],
-            user_message=request.message,
-            bot_response=response_text,
-            source=response_source,
-        )
+        if current_user:
+            storage_service.save_chat_message(
+                user_id=user_id,
+                user_message=request.message,
+                bot_response=response_text,
+                source=response_source,
+            )
         
         return ChatResponse(response=response_text, source=response_source)
     

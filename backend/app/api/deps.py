@@ -5,9 +5,11 @@ from app.services.storage_service import storage_service
 from app.core.supabase_client import supabase
 from app.core.config import settings
 
-bearer = HTTPBearer()
+bearer = HTTPBearer(auto_error=False)
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)):
+    if not credentials:
+        return None
     token = credentials.credentials
     use_supabase = (settings.STORAGE_BACKEND.lower() in ("supabase", "auto") and supabase is not None)
 
