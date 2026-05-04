@@ -25,6 +25,7 @@ rasa-bot/rasa_env/
 node_modules/
 frontend/node_modules/
 frontend/.next/
+frontend/.next-cache/
 frontend/out/
 npm-debug.log*
 

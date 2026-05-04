@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import HomeActions from '@/components/HomeActions';
 
 const features = [
     'Student login and registration',
@@ -23,20 +23,7 @@ export default function HomePage() {
                         aur student support demo ke liye use kar sakte ho.
                     </p>
 
-                    <div className="mt-8 flex flex-wrap gap-4">
-                        <Link
-                            href="/chat"
-                            className="rounded-full bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
-                        >
-                            Start Demo
-                        </Link>
-                        <Link
-                            href="/login"
-                            className="rounded-full border border-white/20 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
-                        >
-                            Login
-                        </Link>
-                    </div>
+                    <HomeActions />
 
                     <div className="mt-10 grid gap-3 text-sm text-slate-200 md:grid-cols-3">
                         {features.map((feature) => (

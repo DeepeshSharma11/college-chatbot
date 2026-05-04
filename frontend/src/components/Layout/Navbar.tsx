@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -13,8 +12,7 @@ export default function Navbar() {
         setIsLoggedIn(!!localStorage.getItem('access_token'));
     }, []);
 
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
+    const handleLogout = () => {
         localStorage.removeItem('access_token');
         setIsLoggedIn(false);
         setIsMobileMenuOpen(false);
