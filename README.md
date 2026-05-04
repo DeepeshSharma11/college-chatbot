@@ -13,8 +13,9 @@ This version is made submission-friendly. Even if Supabase or Groq is not runnin
 ## Features
 
 - Student registration and login with JWT auth
-- Chat API with hybrid response flow
-- `Groq -> FAQ -> GPT-2 -> safe fallback` orchestration
+- Chat API with hybrid RAG + LLM response flow
+- `Groq + Local JSON Database -> GPT-2 fallback` orchestration
+- Dynamic Groq-generated context-aware suggestion chips
 - Local storage for users and chat history
 - Optional Supabase support
 - Optional Docker setup
@@ -152,9 +153,9 @@ SUPABASE_ANON_KEY=your_anon_key
 
 ## Important Customization
 
-Current college information is demo/sample data. Before final submission, replace it with your real college details in:
+Current college information is stored in a JSON knowledge base. Before final submission, replace it with your real college details in:
 
-- `backend/app/services/college_knowledge.py`
+- `backend/app/data/invertis_knowledge.json`
 
 You can customize:
 
