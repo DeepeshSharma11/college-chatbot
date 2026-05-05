@@ -44,9 +44,9 @@ function MessageBubble({
                             : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm'
                     }`}
                 >
-                    <div className="prose prose-sm md:prose-base max-w-none">
+                    <div className={isUser ? "text-sm md:text-base whitespace-pre-wrap" : "prose prose-sm md:prose-base max-w-none"}>
                         {isUser ? (
-                            <p className="whitespace-pre-wrap">{message.text}</p>
+                            message.text
                         ) : (
                             <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                                 {message.text}
