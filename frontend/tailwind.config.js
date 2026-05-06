@@ -6,7 +6,20 @@ module.exports = {
         './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+            },
+            colors: {
+                // Ensure all slate/cyan shades used in the app are included
+            },
+            animation: {
+                'bounce-slow': 'bounce 1.4s infinite',
+            },
+            backdropBlur: {
+                xs: '2px',
+            },
+        },
     },
     plugins: [require('@tailwindcss/typography')],
-}
+};

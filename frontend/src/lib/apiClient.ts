@@ -15,7 +15,7 @@ const request = async <T>(path: string, options: RequestInit, fallbackError: str
     try {
         response = await fetch(`${BASE_URL}${path}`, options);
     } catch {
-        throw new Error("Backend server is not reachable. Please start the backend on http://localhost:8000.");
+        throw new Error("Server se connect nahi ho pa raha. Please check your internet connection or try again later.");
     }
 
     if (!response.ok) {
