@@ -69,15 +69,17 @@ _DISCLAIMER_PATTERNS = ["verify", "confirm", "official", "check", "contact"]
 
 
 def _filter_bullets(bullets: List[str], query: str) -> List[str]:
-    """Return only bullets relevant to the query. Always keep disclaimer bullets."""
+    """Return bullets relevant to the query. Always keep disclaimer bullets.
+    Falls back to all bullets if nothing matches (prevents empty responses)."""
     query_tokens = _tokenize(query)
-    # Remove filler/stop words that would cause false positive matches
-    _STOP_TOKENS = {"batao", "do", "karo", "hai", "kya", "ki", "ka", "ke", "se", "mein", "aur",
-                    "1", "2", "rs", "lakh", "year", "per", "starts", "from", "at"}
+    _STOP_TOKENS = {
+        "batao", "do", "karo", "hai", "kya", "ki", "ka", "ke", "se",
+        "mein", "aur", "1", "2", "rs", "lakh", "year", "per", "starts", "from", "at",
+    }
     query_tokens -= _STOP_TOKENS
 
-    matched_strong: List[str] = []  # bullet tokens are a superset of query tokens
-    matched_weak: List[str] = []   # any overlap
+    matched_strong: List[str] = []
+    matched_weak: List[str] = []
     disclaimers: List[str] = []
 
     for bullet in bullets:
@@ -88,8 +90,8 @@ def _filter_bullets(bullets: List[str], query: str) -> List[str]:
         overlap = query_tokens & bullet_tokens
         if not overlap:
             continue
-        # Strong match: most query tokens appear in this bullet
-        if len(overlap) >= max(1, len(query_tokens) * 0.6):
+        # Lowered threshold: 40% overlap = strong match (was 60%)
+        if len(query_tokens) == 0 or len(overlap) >= max(1, len(query_tokens) * 0.4):
             matched_strong.append(bullet)
         else:
             matched_weak.append(bullet)
@@ -98,7 +100,8 @@ def _filter_bullets(bullets: List[str], query: str) -> List[str]:
         return matched_strong + disclaimers
     if matched_weak:
         return matched_weak + disclaimers
-    # Full fallback: return everything
+    # Full fallback: return all non-disclaimer bullets + disclaimers
+    # (doc was already matched by keyword score, so all bullets are relevant)
     return [b for b in bullets if b not in disclaimers] + disclaimers
 
 
