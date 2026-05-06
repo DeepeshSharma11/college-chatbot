@@ -2,26 +2,74 @@ from fastapi import APIRouter, HTTPException, status
 from app.models.schemas import RegisterRequest, LoginRequest, TokenResponse
 from app.core.security import hash_password, verify_password, create_access_token
 from app.services.storage_service import storage_service
+from app.core.supabase_client import supabase
+from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+_USE_SUPABASE = settings.STORAGE_BACKEND.lower() == "supabase" and supabase is not None
+
+
 @router.post("/register", response_model=TokenResponse)
 async def register(user_data: RegisterRequest):
-    # Validate password length
     if len(user_data.password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
-    
     if len(user_data.password) > 72:
         raise HTTPException(status_code=400, detail="Password must be less than 72 characters")
-    
-    # Check if user exists
+
+    # When Supabase is the backend, use Supabase Auth to create the user.
+    if _USE_SUPABASE:
+        try:
+            # Check if user already exists in our users table
+            existing = storage_service.get_user_by_email(user_data.email)
+            if existing:
+                raise HTTPException(status_code=400, detail="Email already registered")
+
+            # Create user in Supabase Auth
+            auth_resp = supabase.auth.sign_up({
+                "email": user_data.email,
+                "password": user_data.password,
+                "options": {"data": {"name": user_data.name, "role": "student"}},
+            })
+            if not auth_resp.user:
+                raise HTTPException(status_code=400, detail="Registration failed. Please try again.")
+
+            supabase_user_id = auth_resp.user.id
+
+            # Mirror user in our custom users table (without password_hash for Supabase users)
+            try:
+                supabase.table("users").insert({
+                    "id": supabase_user_id,
+                    "email": user_data.email,
+                    "name": user_data.name,
+                    "password_hash": "",  # Not used for Supabase Auth users
+                    "role": "student",
+                }).execute()
+            except Exception:
+                pass  # Row may already exist from a previous attempt; safe to ignore
+
+            # Return our own JWT so the rest of the app works uniformly
+            access_token = create_access_token(data={
+                "sub": supabase_user_id,
+                "email": user_data.email,
+                "role": "student",
+            })
+            return TokenResponse(access_token=access_token)
+
+        except HTTPException:
+            raise
+        except Exception as exc:
+            err = str(exc).lower()
+            if "already registered" in err or "already exists" in err or "unique" in err:
+                raise HTTPException(status_code=400, detail="Email already registered")
+            raise HTTPException(status_code=400, detail=f"Registration failed: {exc}")
+
+    # ---- Local storage path ----
     existing = storage_service.get_user_by_email(user_data.email)
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Create user
+
     hashed_password = hash_password(user_data.password)
-    
     try:
         user = storage_service.create_user(
             email=user_data.email,
@@ -31,33 +79,57 @@ async def register(user_data: RegisterRequest):
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    
-    # Create access token
+
     access_token = create_access_token(data={
         "sub": user["id"],
-        "email": user_data.email, 
-        "role": "student"
+        "email": user_data.email,
+        "role": "student",
     })
-    
     return TokenResponse(access_token=access_token)
+
 
 @router.post("/login", response_model=TokenResponse)
 async def login(login_data: LoginRequest):
-    # Get user by email
+    # When Supabase is the backend, sign in via Supabase Auth.
+    if _USE_SUPABASE:
+        try:
+            auth_resp = supabase.auth.sign_in_with_password({
+                "email": login_data.email,
+                "password": login_data.password,
+            })
+            if not auth_resp.user:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid email or password",
+                )
+
+            # Issue our own JWT for uniform downstream handling
+            access_token = create_access_token(data={
+                "sub": auth_resp.user.id,
+                "email": auth_resp.user.email,
+                "role": auth_resp.user.user_metadata.get("role", "student") if auth_resp.user.user_metadata else "student",
+            })
+            return TokenResponse(access_token=access_token)
+
+        except HTTPException:
+            raise
+        except Exception as exc:
+            err = str(exc).lower()
+            if "invalid" in err or "credentials" in err or "password" in err or "email" in err:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Login failed. Please try again.")
+
+    # ---- Local storage path ----
     user = storage_service.get_user_by_email(login_data.email)
-
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    # Verify password
     if not verify_password(login_data.password, user["password_hash"]):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    # Create access token
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
     access_token = create_access_token(data={
-        "sub": user["id"], 
-        "email": user["email"], 
-        "role": user["role"]
+        "sub": user["id"],
+        "email": user["email"],
+        "role": user["role"],
     })
-    
     return TokenResponse(access_token=access_token)
