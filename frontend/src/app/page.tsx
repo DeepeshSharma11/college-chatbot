@@ -64,7 +64,7 @@ export default function HomePage() {
                     </div>
 
                     <p className="mt-10 text-xs text-slate-600 text-center md:text-left">
-                        Invertis University · Bareilly, Uttar Pradesh · invertis.org
+                        Invertis University · Bareilly, Uttar Pradesh · invertisuniversity.ac.in
                     </p>
                 </div>
             </section>
