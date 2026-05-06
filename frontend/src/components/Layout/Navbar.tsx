@@ -20,44 +20,46 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-blue-600 text-white shadow-lg shrink-0 relative z-50">
+        <nav className="bg-slate-900/80 backdrop-blur-md text-white border-b border-white/10 shrink-0 relative z-50">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo Area */}
-                    <Link href="/" className="flex items-center z-50">
-                        <span className="text-2xl mr-2">🎓</span>
-                        <h1 className="text-xl font-bold truncate">College Chatbot</h1>
+                    <Link href="/" className="flex items-center z-50 gap-2 group">
+                        <div className="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-400/30 group-hover:bg-cyan-500/30 transition-all">
+                            <span className="text-sm">🎓</span>
+                        </div>
+                        <h1 className="text-lg font-bold tracking-tight text-white group-hover:text-cyan-400 transition-colors">Invertis AI</h1>
                     </Link>
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-6">
-                        <Link href="/" className="text-blue-100 hover:text-white transition-colors font-medium">Home</Link>
-                        <Link href="/chat" className="text-blue-100 hover:text-white transition-colors font-medium">Chat</Link>
+                        <Link href="/" className="text-slate-300 hover:text-cyan-400 transition-colors text-sm font-medium">Home</Link>
+                        <Link href="/chat" className="text-slate-300 hover:text-cyan-400 transition-colors text-sm font-medium">Chat</Link>
                         {isLoggedIn ? (
                             <button
                                 onClick={handleLogout}
-                                className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-blue-500"
+                                className="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-white/10 text-slate-300 hover:text-white"
                             >
                                 Logout
                             </button>
                         ) : (
                             <Link
                                 href="/login"
-                                className="bg-white text-blue-600 hover:bg-blue-50 px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm"
+                                className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-5 py-2 rounded-lg text-sm font-semibold transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:shadow-[0_0_20px_rgba(6,182,212,0.5)]"
                             >
                                 Login
                             </Link>
                         )}
                     </div>
 
-                    {/* Mobile Hamburger Button (3 lines, no lag) */}
+                    {/* Mobile Hamburger Button */}
                     <div className="md:hidden flex items-center z-50">
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-white hover:bg-blue-700 p-2 rounded-md focus:outline-none transition-colors"
+                            className="text-slate-300 hover:text-cyan-400 p-2 rounded-md focus:outline-none transition-colors"
                             aria-label="Toggle menu"
                         >
-                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 {isMobileMenuOpen ? (
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 ) : (
@@ -71,7 +73,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Dropdown */}
             <div 
-                className={`md:hidden absolute top-16 left-0 w-full bg-blue-700 border-t border-blue-500 shadow-xl transition-all duration-200 ease-out origin-top ${
+                className={`md:hidden absolute top-16 left-0 w-full bg-slate-900 border-b border-white/10 shadow-2xl transition-all duration-200 ease-out origin-top ${
                     isMobileMenuOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
                 }`}
             >
@@ -79,23 +81,23 @@ export default function Navbar() {
                     <Link 
                         href="/" 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-white hover:bg-blue-600 px-3 py-2 rounded-md font-medium transition-colors text-lg"
+                        className="text-slate-300 hover:text-cyan-400 px-3 py-2 rounded-md font-medium transition-colors"
                     >
                         Home
                     </Link>
                     <Link 
                         href="/chat" 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-white hover:bg-blue-600 px-3 py-2 rounded-md font-medium transition-colors text-lg"
+                        className="text-slate-300 hover:text-cyan-400 px-3 py-2 rounded-md font-medium transition-colors"
                     >
                         Chat Demo
                     </Link>
                     
-                    <div className="border-t border-blue-500 pt-4 mt-2">
+                    <div className="border-t border-white/10 pt-4 mt-2">
                         {isLoggedIn ? (
                             <button
                                 onClick={handleLogout}
-                                className="w-full text-left text-white hover:bg-blue-600 px-3 py-2 rounded-md font-medium transition-colors text-lg"
+                                className="w-full text-left text-slate-300 hover:text-white hover:bg-slate-800 px-3 py-2 rounded-md font-medium transition-colors"
                             >
                                 Logout
                             </button>
@@ -103,7 +105,7 @@ export default function Navbar() {
                             <Link
                                 href="/login"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block w-full text-center bg-white text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-lg text-base font-bold transition-colors shadow-sm"
+                                className="block w-full text-center bg-cyan-500 text-slate-950 hover:bg-cyan-400 px-4 py-3 rounded-lg text-sm font-semibold transition-all"
                             >
                                 Login
                             </Link>

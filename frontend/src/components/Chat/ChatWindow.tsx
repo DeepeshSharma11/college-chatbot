@@ -81,6 +81,7 @@ export default function ChatWindow() {
         }
     }, [messages]);
 
+
     const quickPrompts = [
         'Admission process kya hai?',
         'B.Tech ki fees kitni hai?',
@@ -88,12 +89,15 @@ export default function ChatWindow() {
     ];
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-gray-50">
+        <div className="flex flex-col h-[100dvh] bg-slate-950 text-white relative overflow-hidden">
+            {/* Background glowing effects */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/10 blur-[120px] pointer-events-none" />
+            
             {/* Header via Navbar */}
             <Navbar />
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth">
+            <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth relative z-10">
                 <div className="container mx-auto max-w-4xl flex flex-col gap-4">
                     {messages.map((message) => (
                         <MessageBubble
@@ -105,11 +109,11 @@ export default function ChatWindow() {
 
                     {loading && (
                         <div className="flex justify-start">
-                            <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-4 shadow-sm">
+                            <div className="bg-slate-800 border border-white/10 rounded-2xl rounded-bl-sm px-4 py-4 shadow-sm">
                                 <div className="flex space-x-1.5">
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                                 </div>
                             </div>
                         </div>
@@ -127,7 +131,7 @@ export default function ChatWindow() {
                                 <button
                                     key={prompt}
                                     onClick={() => sendMessage(prompt)}
-                                    className="rounded-full border border-blue-200 bg-white px-3 md:px-4 py-2 text-xs md:text-sm text-blue-700 hover:bg-blue-50 transition-colors shadow-sm"
+                                    className="rounded-full border border-cyan-500/30 bg-slate-800/50 px-3 md:px-4 py-2 text-xs md:text-sm text-cyan-300 hover:bg-cyan-500/20 hover:text-cyan-100 transition-all shadow-sm"
                                 >
                                     {prompt}
                                 </button>
