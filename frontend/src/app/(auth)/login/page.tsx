@@ -21,7 +21,6 @@ export default function LoginPage() {
             localStorage.setItem('access_token', data.access_token);
             router.push('/chat');
         } catch (err: any) {
-            // Provide a user-friendly error message
             const errMsg = err.message || '';
             if (errMsg.includes('not reachable') || errMsg.includes('Failed to fetch')) {
                 setError('Server se connect nahi ho pa raha. Kripaya apna internet check karein ya thodi der baad try karein.');
@@ -37,7 +36,6 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            {/* Background glowing effects */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/20 blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none" />
 

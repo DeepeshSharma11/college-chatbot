@@ -23,7 +23,6 @@ export default function Navbar() {
         <nav className="bg-slate-900/80 backdrop-blur-md text-white border-b border-white/10 shrink-0 relative z-50">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
-                    {/* Logo Area */}
                     <Link href="/" className="flex items-center z-50 gap-2 group">
                         <div className="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-400/30 group-hover:bg-cyan-500/30 transition-all">
                             <span className="text-sm">🎓</span>
@@ -31,7 +30,6 @@ export default function Navbar() {
                         <h1 className="text-lg font-bold tracking-tight text-white group-hover:text-cyan-400 transition-colors">Invertis AI</h1>
                     </Link>
 
-                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-6">
                         <Link href="/" className="text-slate-300 hover:text-cyan-400 transition-colors text-sm font-medium">Home</Link>
                         <Link href="/chat" className="text-slate-300 hover:text-cyan-400 transition-colors text-sm font-medium">Chat</Link>
@@ -52,7 +50,6 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Hamburger Button */}
                     <div className="md:hidden flex items-center z-50">
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -71,7 +68,6 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu Dropdown */}
             <div 
                 className={`md:hidden absolute top-16 left-0 w-full bg-slate-900 border-b border-white/10 shadow-2xl transition-all duration-200 ease-out origin-top ${
                     isMobileMenuOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'

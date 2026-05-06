@@ -32,7 +32,6 @@ export const api = {
         }, "Backend health check failed");
     },
 
-    // Register user
     register: async (email: string, password: string, name: string) => {
         return request<{ access_token: string; token_type: string }>("/auth/register", {
             method: "POST",
@@ -43,7 +42,6 @@ export const api = {
         }, "Registration failed");
     },
 
-    // Login user
     login: async (email: string, password: string) => {
         return request<{ access_token: string; token_type: string }>("/auth/login", {
             method: "POST",
@@ -54,7 +52,6 @@ export const api = {
         }, "Login failed");
     },
 
-    // Send message
     sendMessage: async (
         message: string,
         token: string | null,

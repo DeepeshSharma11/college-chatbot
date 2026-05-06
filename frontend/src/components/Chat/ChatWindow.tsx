@@ -11,7 +11,6 @@ export default function ChatWindow() {
     const [error, setError] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll to bottom
     const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, []);
@@ -90,13 +89,10 @@ export default function ChatWindow() {
 
     return (
         <div className="flex flex-col h-[100dvh] bg-slate-950 text-white relative overflow-hidden">
-            {/* Background glowing effects */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/10 blur-[120px] pointer-events-none" />
             
-            {/* Header via Navbar */}
             <Navbar />
 
-            {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth relative z-10">
                 <div className="container mx-auto max-w-4xl flex flex-col gap-4">
                     {messages.map((message) => (
@@ -143,7 +139,6 @@ export default function ChatWindow() {
                 </div>
             </div>
 
-            {/* Input Area */}
             <InputBar loading={loading} onSend={sendMessage} />
         </div>
     );
