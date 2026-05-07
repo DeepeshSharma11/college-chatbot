@@ -19,7 +19,16 @@ export default function ChatWindow() {
         scrollToBottom();
     }, [messages]);
 
-    // Load welcome message
+    useEffect(() => {
+        if (messages.length <= 1) return;
+        const handler = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handler);
+        return () => window.removeEventListener('beforeunload', handler);
+    }, [messages.length]);
+
     useEffect(() => {
         setMessages([
             {
