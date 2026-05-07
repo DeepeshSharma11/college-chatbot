@@ -1,53 +1,117 @@
-# College Chatbot
+# Invertis University AI Chatbot
 
-College helpdesk chatbot project built with:
+AI-powered campus assistant for Invertis University, Bareilly. Built with **Next.js** frontend and **FastAPI** backend using a **Hybrid RAG + LLM** pipeline.
 
-- `FastAPI` backend
-- `Next.js` frontend
-- `Groq` primary LLM
-- `GPT-2` fallback support
-- Local JSON storage by default
+**Live:** Frontend on Vercel · Backend on Render
 
-This version is made submission-friendly. Even if Supabase or Groq is not running, the chatbot still works with built-in college FAQ answers for common student queries like admissions, fees, courses, placements, hostel, scholarship, and library.
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 14, Tailwind CSS, TypeScript |
+| Backend | FastAPI, Python 3.10+ |
+| LLM | Groq API (Llama 3.3 70B) |
+| Auth | Supabase Auth + JWT |
+| Database | Supabase (PostgreSQL) / Local JSON fallback |
+| RAG | Custom keyword-scoring engine over `invertis_knowledge.json` |
+
+## How It Works
+
+```
+User Query
+    │
+    ▼
+┌──────────────┐
+│  RAG Engine   │──→ Keyword scoring on invertis_knowledge.json
+│  (Tier 1)     │    Returns verified facts with filtered bullets
+└──────┬───────┘
+       │ If match found
+       ▼
+┌──────────────┐
+│  Groq LLM    │──→ Enhances RAG facts into natural response
+│  (Enhance)   │    + Generates 3 dynamic suggestion chips
+└──────┬───────┘
+       │ If no RAG match
+       ▼
+┌──────────────┐
+│  Groq LLM    │──→ Direct LLM response for general/academic queries
+│  (Tier 2)    │
+└──────┬───────┘
+       │ If Groq fails
+       ▼
+┌──────────────┐
+│  Static      │──→ Safe fallback message
+│  (Tier 3)    │
+└──────────────┘
+```
 
 ## Features
 
-- Student registration and login with JWT auth
-- Chat API with hybrid RAG + LLM response flow
-- `Groq + Local JSON Database -> GPT-2 fallback` orchestration
-- Dynamic Groq-generated context-aware suggestion chips
-- Local storage for users and chat history
-- Optional Supabase support
-- Optional Docker setup
-- Ready frontend UI for demo
-
-## Prerequisites
-
-- Python `3.10+`
-- Node.js `18+` or `20+`
-- npm
-- Optional: Docker Desktop
+- JWT-based student registration and login via Supabase Auth
+- 3-tier response pipeline: RAG → Groq LLM → Static fallback
+- Dynamic AI-generated follow-up suggestion chips
+- Hinglish-friendly error messages for better student UX
+- Context-aware follow-up query expansion (e.g. "number batao" after asking about placements)
+- "What did I ask?" memory recall from chat history
+- Premium dark theme UI with glassmorphism and ambient glow effects
+- Mobile-responsive design across all pages
+- Markdown rendering for bot responses
+- Local JSON storage fallback (no database setup needed for demo)
 
 ## Project Structure
 
-```text
+```
 college-chatbot/
 ├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── routes/
+│   │   │   │   ├── auth.py          # Register/Login endpoints
+│   │   │   │   └── chat.py          # Chat message endpoint
+│   │   │   └── deps.py              # JWT auth dependency
+│   │   ├── core/
+│   │   │   ├── config.py            # Environment settings
+│   │   │   └── security.py          # Password hashing, JWT tokens
+│   │   ├── data/
+│   │   │   └── invertis_knowledge.json  # RAG knowledge base
+│   │   ├── services/
+│   │   │   ├── chat_orchestrator.py  # 3-tier response pipeline
+│   │   │   ├── college_knowledge.py  # RAG engine with keyword scoring
+│   │   │   ├── groq_service.py       # Groq API integration
+│   │   │   └── storage.py           # Supabase/Local storage abstraction
+│   │   └── main.py                  # FastAPI app entry point
+│   ├── requirements.txt
+│   └── supabase_schema.sql          # Database schema for Supabase
 ├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── (auth)/
+│   │   │   │   ├── login/page.tsx
+│   │   │   │   └── register/page.tsx
+│   │   │   ├── chat/page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx             # Landing page
+│   │   │   └── globals.css
+│   │   ├── components/
+│   │   │   ├── Chat/
+│   │   │   │   ├── ChatWindow.tsx
+│   │   │   │   ├── InputBar.tsx
+│   │   │   │   └── MessageBubble.tsx
+│   │   │   ├── Layout/Navbar.tsx
+│   │   │   └── HomeActions.tsx
+│   │   └── lib/apiClient.ts         # API client with error handling
+│   └── package.json
 ├── docker-compose.yml
 └── README.md
 ```
 
-## How It Works
+## Prerequisites
 
-When a student sends a message:
-
-1. Backend first tries `Groq` for primary response.
-2. If Groq is unavailable or does not match, backend checks the built-in college FAQ layer.
-3. If needed, it tries `GPT-2`.
-4. If everything else misses, it returns a safe college-related fallback response.
-
-This makes the project more reliable for college demos and viva.
+- Python 3.10+
+- Node.js 18+
+- npm
+- Groq API Key (free at console.groq.com)
+- Supabase project (free at supabase.com) — optional for local demo
 
 ## Backend Setup
 
@@ -62,6 +126,21 @@ uvicorn app.main:app --reload
 
 Backend runs on `http://localhost:8000`
 
+### Backend Environment Variables
+
+```env
+STORAGE_BACKEND=local
+JWT_SECRET=your_jwt_secret
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_API_URL=https://api.groq.com/openai/v1/chat/completions
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_KEY=your_service_key
+SUPABASE_ANON_KEY=your_anon_key
+```
+
+Set `STORAGE_BACKEND=supabase` for production with Supabase database.
+
 ## Frontend Setup
 
 ```bash
@@ -73,34 +152,11 @@ npm run dev
 
 Frontend runs on `http://localhost:3000`
 
-## Team Setup
+### Frontend Environment Variables
 
-Every teammate can run the project locally with these steps:
-
-1. Clone the repo.
-2. Create backend `.env` from `backend/.env.example`.
-3. Create frontend `.env.local` from `frontend/.env.example`.
-4. Install backend dependencies.
-5. Install frontend dependencies.
-6. Start backend.
-7. Start frontend.
-
-### Terminal 1: Backend
-
-```bash
-cd backend
-venv\Scripts\activate
-uvicorn app.main:app --reload
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 ```
-
-### Terminal 2: Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-Open `http://localhost:3000`
 
 ## Docker Setup
 
@@ -108,92 +164,50 @@ Open `http://localhost:3000`
 docker-compose up --build
 ```
 
-## Quick Demo Flow
+## API Endpoints
 
-1. Open the frontend.
-2. Register a new user.
-3. Go to chat.
-4. Ask questions like fees, hostel, admission, or courses.
-5. If Groq is not configured, the built-in FAQ layer still answers.
-
-## Default Storage Mode
-
-By default this project uses:
-
-- `STORAGE_BACKEND=local`
-- file path: `backend/data/local_db.json`
-
-This means:
-
-- no database setup required
-- users and messages are stored locally
-- project is easy to run for evaluation
-
-Note:
-
-- local data file is created automatically at runtime
-- `.gitignore` keeps local data, venv, node_modules, and env files out of git
-
-If you want Supabase later, update backend `.env`:
-
-```env
-STORAGE_BACKEND=supabase
-SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_KEY=your_service_key
-SUPABASE_ANON_KEY=your_anon_key
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register new student |
+| POST | `/api/v1/auth/login` | Login and get JWT token |
+| POST | `/api/v1/chat/message` | Send message and get AI response |
+| GET | `/api/v1/health` | Health check |
 
 ## Sample Questions
 
-- `Admission process kya hai?`
-- `B.Tech ki fees kitni hai?`
-- `Hostel facilities batao`
-- `Placement record kya hai?`
-- `Library timing kya hai?`
+| Question | Response Source |
+|----------|---------------|
+| Admission process kya hai? | RAG + Groq Enhancement |
+| B.Tech CSE ki fees kitni hai? | RAG (fee structure) |
+| Hostel mein AC room ka price? | RAG (hostel fees) |
+| Placement cell ka number batao | RAG (contacts) |
+| What is deadlock in OS? | Groq LLM (academic) |
+| Tell me a joke | Groq LLM (general) |
 
-## Important Customization
+## Knowledge Base
 
-Current college information is stored in a JSON knowledge base. Before final submission, replace it with your real college details in:
+All Invertis University data is stored in `backend/app/data/invertis_knowledge.json` covering:
 
-- `backend/app/data/invertis_knowledge.json`
+- University overview and location
+- Admission process and required documents
+- Courses and departments (B.Tech, MBA, BCA, MCA, etc.)
+- Fee structure 2025-26
+- Hostel fees (AC/Non-AC rooms)
+- Contact and admission helpline numbers
+- Placement cell contacts (CRC)
+- Academic facilities
+- Scholarships and education loans
 
-You can customize:
-
-- college name
-- fees
-- available courses
-- placement stats
-- hostel info
-- scholarship rules
-- contact details
-
-## API Endpoints
-
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `POST /api/v1/chat/message`
-- `GET /health`
+Source: [invertisuniversity.ac.in](https://www.invertisuniversity.ac.in/)
 
 ## Troubleshooting
 
-- If frontend opens but chat fails, make sure backend is running on port `8000`.
-- If Groq is not set up, chatbot will still work through FAQ fallback.
-- If `npm run build` fails on a different machine, first run `npm install`.
-- If backend import fails, recreate the virtual environment and install `requirements.txt` again.
-- If you want real college answers, update the FAQ content before demo.
+- **Chat fails:** Ensure backend is running on port 8000
+- **Groq not working:** Verify `GROQ_API_KEY` in backend `.env`
+- **Auth errors:** Check `JWT_SECRET` is set in backend `.env`
+- **Build fails on new machine:** Run `npm install` first
+- **Import errors:** Recreate venv and reinstall `requirements.txt`
 
-## Verification Done
+## Submission Title
 
-The following checks were run successfully during setup:
-
-- backend import check
-- chatbot FAQ smoke test
-- frontend `npm run build`
-
-## Suggested Submission Title
-
-`AI-Powered College Chatbot using FastAPI, Next.js, Groq, and GPT-2`
-
-## Short Documentation Summary
-
-This project is a hybrid college chatbot system designed to answer student queries. It uses Groq for primary responses, GPT-2 for generative fallback, and a built-in FAQ layer for reliable college-specific answers. The backend is developed in FastAPI, the frontend in Next.js, and the system supports both local JSON storage and optional Supabase integration. It is suitable for admission helpdesk, college inquiry systems, and academic project submission.
+**AI-Powered University Chatbot using FastAPI, Next.js, Groq LLM, and RAG**
