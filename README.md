@@ -1,6 +1,6 @@
 # Invertis University AI Chatbot
 
-AI-powered campus assistant for Invertis University, Bareilly. Built with **Next.js** frontend and **FastAPI** backend using a **Hybrid RAG + LLM** pipeline.
+AI campus assistant for Invertis University, Bareilly. Built with **Next.js** frontend and **FastAPI** backend using a **Hybrid RAG + LLM** pipeline.
 
 **Live:** Frontend on Vercel · Backend on Render
 
@@ -210,4 +210,4 @@ Source: [invertisuniversity.ac.in](https://www.invertisuniversity.ac.in/)
 
 ## Submission Title
 
-**AI-Powered University Chatbot using FastAPI, Next.js, Groq LLM, and RAG**
+**AI University Chatbot using FastAPI, Next.js, Groq LLM, and RAG**
