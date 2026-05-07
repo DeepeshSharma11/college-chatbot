@@ -47,3 +47,7 @@ rasa-bot/.rasa/
 # Misc
 *.sqlite3
 *.tar.gz
+
+# Local docs (do not push)
+Memory.md
+SRS.md
