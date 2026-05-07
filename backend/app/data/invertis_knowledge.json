@@ -117,15 +117,22 @@
         },
         {
             "id": "invertis_scholarship",
-            "title": "Scholarships And Education Loan",
-            "keywords": ["scholarship", "loan", "education loan", "financial aid", "fee waiver", "concession"],
+            "title": "Scholarships And Fee Concession",
+            "keywords": ["scholarship", "fee waiver", "concession", "merit scholarship", "jee scholarship", "cuet scholarship", "clat scholarship", "sports scholarship", "defence scholarship", "financial aid", "iucet", "cat scholarship", "mat scholarship"],
             "source_url": "https://www.invertisuniversity.ac.in/admission",
             "bullets": [
-                "The admission section includes Scholarships and Education Loan pages.",
-                "Students should check current scholarship rules, eligibility, documents, and deadlines from the official admissions section.",
-                "For confirmation, contact the admission helpline before applying."
+                "Merit Scholarship (UG/Diploma): 90%+ marks = 100% tuition fee waiver; 80-89.99% = 50%; 75-79.99% = 30%; 70-74.99% = 20%.",
+                "Merit Scholarship (PG): 90%+ = 100%; 85-89.99% = 50%; 80-84.99% = 30%; 75-78.99% = 25%; 70-74.99% = 20%; 60-69.99% = 15% tuition fee waiver.",
+                "Sports Person Quota: International level = 75%; National level = 50%; State level = 25% tuition fee waiver.",
+                "Achievements in Other Fields: International level = 75%; National level = 50%; State level = 25% tuition fee waiver.",
+                "Defence Personnel and Dependants: All eligible candidates get 25% tuition fee waiver.",
+                "JEE Mains (B.Tech): Rank 1-20000 = 100%; 20001-30000 = 75%; 30001-40000 = 50%; 40001-50000 = 30%; 50001-60000 = 15% tuition fee waiver.",
+                "CUET/CAT/MAT/IUCET: Above 95 percentile = 100%; 90-94.99 = 75%; 85-89.99 = 50%; 80-84.99 = 30%; 75-78.99 = 20%; 70-74.99 = 15% tuition fee waiver.",
+                "CLAT (Law): Rank 1-500 = 100%; 501-1000 = 75%; 1001-1500 = 50%; 1500-2000 = 30%; 2001-Qualified = 20% tuition fee waiver.",
+                "Important: Scholarships are valid for first year only. Tuition fee is 60% of total academic fees. Two or more scholarships cannot be clubbed; the one with greater reward applies.",
+                "IUCET scholarship is not applicable for B.Pharm and D.Pharm students."
             ],
-            "text": "Invertis University admission section includes Scholarships and Education Loan pages. Students should check the current scholarship rules, eligibility, documents, and deadlines from the official admissions section or admission helpline before applying."
+            "text": "Invertis University offers multiple scholarship schemes. Merit Scholarship for UG/Diploma: 90% and above marks gives 100% tuition fee waiver, 80-89.99% gives 50%, 75-79.99% gives 30%, 70-74.99% gives 20%. Merit Scholarship for PG: 90% and above gives 100%, 85-89.99% gives 50%, 80-84.99% gives 30%, 75-78.99% gives 25%, 70-74.99% gives 20%, 60-69.99% gives 15% tuition fee waiver. Sports Person Quota: International participation gives 75%, National gives 50%, State gives 25% waiver. Achievements in Other Fields: same slab as Sports. Defence Personnel and Dependants get 25% waiver. JEE Mains scholarship for B.Tech: Rank 1-20000 gets 100%, 20001-30000 gets 75%, 30001-40000 gets 50%, 40001-50000 gets 30%, 50001-60000 gets 15% tuition fee waiver. CUET/CAT/MAT/IUCET: Above 95 percentile gets 100%, 90-94.99 gets 75%, 85-89.99 gets 50%, 80-84.99 gets 30%, 75-78.99 gets 20%, 70-74.99 gets 15% tuition fee waiver. CLAT scholarship: Rank 1-500 gets 100%, 501-1000 gets 75%, 1001-1500 gets 50%, 1500-2000 gets 30%, 2001-Qualified gets 20% tuition fee waiver. All scholarships are valid for first year only and tuition fee is 60% of total academic fees. Scholarships cannot be clubbed and IUCET is not applicable for B.Pharm and D.Pharm students."
         }
     ]
 }
