@@ -1,4 +1,7 @@
+import logging
 from fastapi import APIRouter, HTTPException, status
+
+logger = logging.getLogger(__name__)
 from app.models.schemas import RegisterRequest, LoginRequest, TokenResponse, ForgotPasswordRequest, ResetPasswordRequest
 from app.core.security import hash_password, verify_password, create_access_token
 from app.services.storage_service import storage_service
@@ -139,20 +142,33 @@ async def forgot_password(req: ForgotPasswordRequest):
     if not _USE_SUPABASE:
         raise HTTPException(status_code=501, detail="Forgot password is only supported with Supabase backend.")
     try:
-        # Supabase will send a reset password email to the user
-        # You may need to configure the redirect URL in your Supabase project dashboard
-        supabase.auth.reset_password_email(req.email)
+        supabase.auth.reset_password_for_email(
+            req.email,
+            options={"redirect_to": "https://college-chatbot-frontend.vercel.app/reset-password"}
+        )
         return {"message": "If the email is registered, a password reset link has been sent."}
     except Exception as exc:
-        raise HTTPException(status_code=400, detail="Failed to send reset email. Please try again.")
+        logger.error(f"Supabase reset password error: {exc}")
+        raise HTTPException(status_code=400, detail=f"Failed to send reset email: {str(exc)}")
 
 @router.post("/reset-password")
 async def reset_password(req: ResetPasswordRequest):
-    # NOTE: Normally with Supabase, the user clicks the email link, which redirects to your frontend 
-    # with an access_token in the URL hash. The frontend extracts it and either calls Supabase directly 
-    # to update the password or passes the token to the backend.
-    # We will raise a 501 here and let the frontend handle the Supabase client directly, or 
-    # we can implement the logic if we receive the token. For simplicity, we just leave a stub or 
-    # handle it strictly on the frontend.
-    raise HTTPException(status_code=501, detail="Please handle password reset directly via Supabase client on the frontend using the token from the URL.")
+    if not _USE_SUPABASE:
+        raise HTTPException(status_code=501, detail="Password reset is only supported with Supabase backend.")
+    if len(req.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    try:
+        user_resp = supabase.auth.get_user(req.access_token)
+        if not user_resp or not user_resp.user:
+            raise HTTPException(status_code=401, detail="Invalid or expired reset link. Please request a new one.")
+        supabase.auth.admin.update_user_by_id(user_resp.user.id, {"password": req.password})
+        return {"message": "Password updated successfully! You can now login with your new password."}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"Reset password error: {exc}")
+        err = str(exc).lower()
+        if "expired" in err or "invalid" in err:
+            raise HTTPException(status_code=401, detail="Reset link has expired. Please request a new one.")
+        raise HTTPException(status_code=400, detail="Failed to reset password. Please try again.")
 

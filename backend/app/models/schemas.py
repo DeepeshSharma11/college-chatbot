@@ -15,6 +15,7 @@ class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
 class ResetPasswordRequest(BaseModel):
+    access_token: str
     password: str
 
 class ChatHistoryMessage(BaseModel):

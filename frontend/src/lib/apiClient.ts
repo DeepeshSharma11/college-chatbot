@@ -62,6 +62,16 @@ export const api = {
         }, "Failed to send reset link");
     },
 
+    resetPassword: async (access_token: string, password: string) => {
+        return request<{ message: string }>("/auth/reset-password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ access_token, password }),
+        }, "Failed to reset password");
+    },
+
     sendMessage: async (
         message: string,
         token: string | null,
