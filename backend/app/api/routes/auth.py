@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.models.schemas import RegisterRequest, LoginRequest, TokenResponse
+from app.models.schemas import RegisterRequest, LoginRequest, TokenResponse, ForgotPasswordRequest, ResetPasswordRequest
 from app.core.security import hash_password, verify_password, create_access_token
 from app.services.storage_service import storage_service
 from app.core.supabase_client import supabase
@@ -133,3 +133,26 @@ async def login(login_data: LoginRequest):
         "role": user["role"],
     })
     return TokenResponse(access_token=access_token)
+
+@router.post("/forgot-password")
+async def forgot_password(req: ForgotPasswordRequest):
+    if not _USE_SUPABASE:
+        raise HTTPException(status_code=501, detail="Forgot password is only supported with Supabase backend.")
+    try:
+        # Supabase will send a reset password email to the user
+        # You may need to configure the redirect URL in your Supabase project dashboard
+        supabase.auth.reset_password_email(req.email)
+        return {"message": "If the email is registered, a password reset link has been sent."}
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Failed to send reset email. Please try again.")
+
+@router.post("/reset-password")
+async def reset_password(req: ResetPasswordRequest):
+    # NOTE: Normally with Supabase, the user clicks the email link, which redirects to your frontend 
+    # with an access_token in the URL hash. The frontend extracts it and either calls Supabase directly 
+    # to update the password or passes the token to the backend.
+    # We will raise a 501 here and let the frontend handle the Supabase client directly, or 
+    # we can implement the logic if we receive the token. For simplicity, we just leave a stub or 
+    # handle it strictly on the frontend.
+    raise HTTPException(status_code=501, detail="Please handle password reset directly via Supabase client on the frontend using the token from the URL.")
+

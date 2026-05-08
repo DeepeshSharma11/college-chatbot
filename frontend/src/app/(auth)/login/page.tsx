@@ -10,6 +10,8 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isForgotPassword, setIsForgotPassword] = useState(false);
+    const [forgotMessage, setForgotMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,6 +31,22 @@ export default function LoginPage() {
             } else {
                 setError('Kuch galat ho gaya! Kripaya dubara koshish karein.');
             }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setForgotMessage('');
+        setLoading(true);
+
+        try {
+            const data = await api.forgotPassword(email);
+            setForgotMessage(data.message || 'If the email is registered, a password reset link has been sent.');
+        } catch (err: any) {
+            setError(err.message || 'Failed to send reset link.');
         } finally {
             setLoading(false);
         }
@@ -56,11 +74,17 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-6" onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit}>
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
                             <span className="text-red-400 mt-0.5">⚠️</span>
                             <p className="text-sm text-red-200">{error}</p>
+                        </div>
+                    )}
+                    {forgotMessage && (
+                        <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                            <span className="text-emerald-400 mt-0.5">✅</span>
+                            <p className="text-sm text-emerald-200">{forgotMessage}</p>
                         </div>
                     )}
 
@@ -80,6 +104,7 @@ export default function LoginPage() {
                             />
                         </div>
 
+                        {!isForgotPassword && (
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1.5 ml-1">
                                 Password
@@ -112,7 +137,22 @@ export default function LoginPage() {
                                     )}
                                 </button>
                             </div>
+                            
+                            <div className="flex items-center justify-end mt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsForgotPassword(true);
+                                        setError('');
+                                        setForgotMessage('');
+                                    }}
+                                    className="text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                                >
+                                    Forgot your password?
+                                </button>
+                            </div>
                         </div>
+                        )}
                     </div>
 
                     <div>
@@ -127,21 +167,38 @@ export default function LoginPage() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Signing in...
+                                    {isForgotPassword ? 'Sending link...' : 'Signing in...'}
                                 </span>
                             ) : (
-                                'Sign in'
+                                isForgotPassword ? 'Send Reset Link' : 'Sign in'
                             )}
                         </button>
                     </div>
 
                     <div className="text-center pt-2">
-                        <p className="text-sm text-slate-400">
-                            Don't have an account?{' '}
-                            <a href="/register" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
-                                Register here
-                            </a>
-                        </p>
+                        {isForgotPassword ? (
+                            <p className="text-sm text-slate-400">
+                                Remember your password?{' '}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsForgotPassword(false);
+                                        setError('');
+                                        setForgotMessage('');
+                                    }}
+                                    className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                                >
+                                    Back to login
+                                </button>
+                            </p>
+                        ) : (
+                            <p className="text-sm text-slate-400">
+                                Don't have an account?{' '}
+                                <a href="/register" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                                    Register here
+                                </a>
+                            </p>
+                        )}
                     </div>
                 </form>
             </div>

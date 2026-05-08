@@ -11,6 +11,12 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    password: str
+
 class ChatHistoryMessage(BaseModel):
     role: Literal["user", "bot"]
     text: str

@@ -52,6 +52,16 @@ export const api = {
         }, "Login failed");
     },
 
+    forgotPassword: async (email: string) => {
+        return request<{ message: string }>("/auth/forgot-password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+        }, "Failed to send reset link");
+    },
+
     sendMessage: async (
         message: string,
         token: string | null,
