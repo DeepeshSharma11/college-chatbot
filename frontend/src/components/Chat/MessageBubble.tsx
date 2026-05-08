@@ -19,6 +19,7 @@ const markdownComponents = {
     li: ({ node, ...props }: any) => <li className="leading-relaxed" {...props} />,
     strong: ({ node, ...props }: any) => <strong className="font-semibold text-white" {...props} />,
     em: ({ node, ...props }: any) => <em className="mt-2 block text-xs not-italic text-slate-400" {...props} />,
+    a: ({ node, ...props }: any) => <a className="text-cyan-400 hover:text-cyan-300 hover:underline break-all" target="_blank" rel="noopener noreferrer" {...props} />,
 };
 
 function formatTime(date: Date) {
