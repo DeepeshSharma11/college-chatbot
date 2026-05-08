@@ -16,15 +16,21 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+            const res = await fetch(`${apiUrl}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
             });
 
-            if (signInError) throw signInError;
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.detail || 'Login failed. Please check your credentials.');
+            }
             
-            if (data.session) {
-                localStorage.setItem('access_token', data.session.access_token);
+            if (data.access_token) {
+                localStorage.setItem('access_token', data.access_token);
                 router.push('/chat');
             } else {
                 throw new Error('Login failed. No session available.');
@@ -37,15 +43,15 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
+        <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-md w-full space-y-8 glass-card p-10 rounded-2xl transform transition-all duration-300 hover:scale-[1.01]">
                 <div>
                     <div className="text-center">
-                        <div className="text-6xl mb-4">🎓</div>
-                        <h2 className="text-3xl font-extrabold text-gray-900">
+                        <div className="text-6xl mb-4 animate-bounce">🎓</div>
+                        <h2 className="text-3xl font-extrabold text-white text-glow">
                             Welcome Back
                         </h2>
-                        <p className="mt-2 text-sm text-gray-600">
+                        <p className="mt-2 text-sm text-gray-300">
                             Sign in to continue to College Chatbot
                         </p>
                     </div>
@@ -53,14 +59,14 @@ export default function LoginPage() {
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                            <p className="text-sm text-red-700">{error}</p>
+                        <div className="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-md glass-panel">
+                            <p className="text-sm text-red-200">{error}</p>
                         </div>
                     )}
 
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-1">
                                 Email Address
                             </label>
                             <input
@@ -69,13 +75,13 @@ export default function LoginPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className="appearance-none relative block w-full px-4 py-3 bg-white/5 border border-white/10 placeholder-gray-400 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm"
                                 placeholder="Enter your email"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-1">
                                 Password
                             </label>
                             <input
@@ -84,7 +90,7 @@ export default function LoginPage() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                className="appearance-none relative block w-full px-4 py-3 bg-white/5 border border-white/10 placeholder-gray-400 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm"
                                 placeholder="Enter your password"
                             />
                         </div>
@@ -94,7 +100,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 neon-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             {loading ? (
                                 <span className="flex items-center">
@@ -111,9 +117,9 @@ export default function LoginPage() {
                     </div>
 
                     <div className="text-center">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-400">
                             Don't have an account?{' '}
-                            <a href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                            <a href="/register" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
                                 Register here
                             </a>
                         </p>

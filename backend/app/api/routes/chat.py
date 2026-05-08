@@ -32,3 +32,15 @@ async def send_message(
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
+
+@router.get("/history")
+async def get_history(current_user=Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    try:
+        user_id = current_user["id"]
+        messages = storage_service.get_messages_by_user(user_id=user_id, limit=200)
+        return {"messages": messages}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching history: {str(e)}")

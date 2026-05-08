@@ -12,13 +12,15 @@ This version is made submission-friendly. Even if Supabase or Groq is not runnin
 
 ## Features
 
-- Student registration and login with JWT auth
-- Chat API with hybrid response flow
-- `Groq -> FAQ -> GPT-2 -> safe fallback` orchestration
-- Local storage for users and chat history
-- Optional Supabase support
-- Optional Docker setup
-- Ready frontend UI for demo
+- **Ultra-Modern UI**: 3D glassmorphic design, glowing elements, and fully responsive.
+- **Voice AI Support**: Speech-to-Text (Microphone) and Text-to-Speech (Auto-read) capabilities natively integrated.
+- **Rich Media Answers**: Chatbot automatically embeds high-quality university photos (Campus, Library, Hostel, Cafeteria) into relevant answers.
+- **Student Dashboard**: Dedicated profile page for students to view personal chat history and download conversation transcripts.
+- **Admin Dashboard**: Secure control panel for staff to monitor registered users and live chat logs in real-time.
+- **Authentication**: Role-based JWT auth (Admin & Student).
+- **Smart Routing**: `Groq -> FAQ -> GPT-2 -> safe fallback` orchestration.
+- **Storage**: Local JSON storage by default with optional Supabase support.
+- **Deployment**: Optional Docker setup available.
 
 ## Prerequisites
 
@@ -191,8 +193,8 @@ The following checks were run successfully during setup:
 
 ## Suggested Submission Title
 
-`AI-Powered College Chatbot using FastAPI, Next.js, Groq, and GPT-2`
+`Next-Gen AI College Chatbot: Voice-Enabled, Groq-Powered, with Dashboards & 3D Glassmorphic UI`
 
 ## Short Documentation Summary
 
-This project is a hybrid college chatbot system designed to answer student queries. It uses Groq for primary responses, GPT-2 for generative fallback, and a built-in FAQ layer for reliable college-specific answers. The backend is developed in FastAPI, the frontend in Next.js, and the system supports both local JSON storage and optional Supabase integration. It is suitable for admission helpdesk, college inquiry systems, and academic project submission.
+This project is a highly sophisticated, ultra-modern hybrid college chatbot system. It features a premium 3D glassmorphic frontend built in Next.js, complete with **native voice integration (Speech-to-Text & Text-to-Speech)**, rich media photo embedding, a **Student Dashboard** for downloading chat transcripts, and a secure **Admin Dashboard** for real-time monitoring. The backend, built with FastAPI, orchestrates responses using Groq for primary LLM logic, GPT-2 for generative fallback, and a built-in FAQ layer for 100% reliable college-specific answers. It supports local JSON storage for seamless demo setups without requiring external databases. It is the perfect, state-of-the-art solution for admission helpdesks and academic project submissions.

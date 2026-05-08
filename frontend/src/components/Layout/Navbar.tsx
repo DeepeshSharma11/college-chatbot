@@ -7,10 +7,21 @@ import Link from 'next/link';
 export default function Navbar() {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
-        setIsLoggedIn(!!localStorage.getItem('access_token'));
+        const token = localStorage.getItem('access_token');
+        setIsLoggedIn(!!token);
+        
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setIsAdmin(payload.role === 'admin');
+            } catch (e) {
+                console.error("Failed to decode token", e);
+            }
+        }
     }, []);
 
     const handleLogout = async () => {
@@ -22,32 +33,42 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-blue-600 text-white shadow-lg shrink-0 relative z-50">
-            <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-16">
+        <nav className="glass-panel border-b border-white/10 text-white shrink-0 relative z-50 rounded-b-3xl">
+            <div className="container mx-auto px-6">
+                <div className="flex items-center justify-between h-20">
                     {/* Logo Area */}
-                    <Link href="/" className="flex items-center z-50">
-                        <span className="text-2xl mr-2">🎓</span>
-                        <h1 className="text-xl font-bold truncate">College Chatbot</h1>
+                    <Link href="/" className="flex items-center z-50 group">
+                        <span className="text-3xl mr-3 transform group-hover:scale-110 transition-transform">🎓</span>
+                        <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400 truncate tracking-tight">
+                            College AI
+                        </h1>
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center space-x-6">
-                        <Link href="/" className="text-blue-100 hover:text-white transition-colors font-medium">Home</Link>
-                        <Link href="/chat" className="text-blue-100 hover:text-white transition-colors font-medium">Chat</Link>
+                    <div className="hidden md:flex items-center space-x-8">
+                        <Link href="/" className="text-gray-300 hover:text-white transition-colors font-semibold text-sm tracking-wide">HOME</Link>
+                        <Link href="/chat" className="text-gray-300 hover:text-white transition-colors font-semibold text-sm tracking-wide">CHAT</Link>
+                        {isLoggedIn && (
+                            <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors font-semibold text-sm tracking-wide">DASHBOARD</Link>
+                        )}
+                        {isAdmin && (
+                            <Link href="/admin" className="text-indigo-400 hover:text-indigo-300 transition-colors font-bold text-sm tracking-wide neon-glow px-3 py-1 rounded-full border border-indigo-500/50 bg-indigo-500/10">
+                                ADMIN PANEL
+                            </Link>
+                        )}
                         {isLoggedIn ? (
                             <button
                                 onClick={handleLogout}
-                                className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-blue-500"
+                                className="bg-white/10 hover:bg-white/20 backdrop-blur-md px-6 py-2.5 rounded-full text-sm font-bold transition-all border border-white/20 hover:border-white/40 shadow-lg text-white"
                             >
-                                Logout
+                                LOGOUT
                             </button>
                         ) : (
                             <Link
                                 href="/login"
-                                className="bg-white text-blue-600 hover:bg-blue-50 px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm"
+                                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 px-7 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg neon-glow text-white tracking-wide"
                             >
-                                Login
+                                LOGIN
                             </Link>
                         )}
                     </div>
@@ -56,7 +77,7 @@ export default function Navbar() {
                     <div className="md:hidden flex items-center z-50">
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-white hover:bg-blue-700 p-2 rounded-md focus:outline-none transition-colors"
+                            className="text-white hover:bg-white/10 p-2 rounded-full focus:outline-none transition-colors border border-transparent hover:border-white/20"
                             aria-label="Toggle menu"
                         >
                             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,31 +94,49 @@ export default function Navbar() {
 
             {/* Mobile Menu Dropdown */}
             <div 
-                className={`md:hidden absolute top-16 left-0 w-full bg-blue-700 border-t border-blue-500 shadow-xl transition-all duration-200 ease-out origin-top ${
+                className={`md:hidden absolute top-20 left-0 w-full glass-card border-t border-white/10 shadow-2xl transition-all duration-300 ease-out origin-top rounded-b-3xl overflow-hidden ${
                     isMobileMenuOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
                 }`}
             >
-                <div className="px-4 py-5 flex flex-col space-y-4">
+                <div className="px-6 py-8 flex flex-col space-y-6">
                     <Link 
                         href="/" 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-white hover:bg-blue-600 px-3 py-2 rounded-md font-medium transition-colors text-lg"
+                        className="text-gray-300 hover:text-white px-4 py-3 rounded-xl font-bold transition-colors text-lg bg-white/5 hover:bg-white/10"
                     >
                         Home
                     </Link>
                     <Link 
                         href="/chat" 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-white hover:bg-blue-600 px-3 py-2 rounded-md font-medium transition-colors text-lg"
+                        className="text-gray-300 hover:text-white px-4 py-3 rounded-xl font-bold transition-colors text-lg bg-white/5 hover:bg-white/10"
                     >
                         Chat Demo
                     </Link>
+                    {isLoggedIn && (
+                        <Link 
+                            href="/dashboard" 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-gray-300 hover:text-white px-4 py-3 rounded-xl font-bold transition-colors text-lg bg-white/5 hover:bg-white/10"
+                        >
+                            Dashboard
+                        </Link>
+                    )}
+                    {isAdmin && (
+                        <Link 
+                            href="/admin" 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-indigo-300 hover:text-indigo-200 px-4 py-3 rounded-xl font-bold transition-colors text-lg bg-indigo-500/20 border border-indigo-500/30"
+                        >
+                            Admin Panel
+                        </Link>
+                    )}
                     
-                    <div className="border-t border-blue-500 pt-4 mt-2">
+                    <div className="border-t border-white/10 pt-6 mt-4">
                         {isLoggedIn ? (
                             <button
                                 onClick={handleLogout}
-                                className="w-full text-left text-white hover:bg-blue-600 px-3 py-2 rounded-md font-medium transition-colors text-lg"
+                                className="w-full text-center text-white bg-white/10 hover:bg-white/20 px-4 py-4 rounded-xl font-bold transition-colors text-lg border border-white/10"
                             >
                                 Logout
                             </button>
@@ -105,7 +144,7 @@ export default function Navbar() {
                             <Link
                                 href="/login"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block w-full text-center bg-white text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-lg text-base font-bold transition-colors shadow-sm"
+                                className="block w-full text-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 px-4 py-4 rounded-xl text-lg font-bold transition-all shadow-lg neon-glow"
                             >
                                 Login
                             </Link>

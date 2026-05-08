@@ -57,4 +57,46 @@ export const api = {
         }
         return data;
     },
+
+    // Admin: Get all users
+    getAdminUsers: async (token: string) => {
+        const response = await fetch(`${BASE_URL}/admin/users`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || "Failed to fetch users");
+        }
+        return data.users;
+    },
+
+    // Admin: Get all messages
+    getAdminMessages: async (token: string) => {
+        const response = await fetch(`${BASE_URL}/admin/messages`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || "Failed to fetch messages");
+        }
+        return data.messages;
+    },
+
+    // Get personal chat history
+    getChatHistory: async (token: string) => {
+        const response = await fetch(`${BASE_URL}/chat/history`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || "Failed to fetch chat history");
+        }
+        return data.messages;
+    }
 };

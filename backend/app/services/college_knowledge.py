@@ -12,9 +12,13 @@ FAQ_RESPONSES = {
             "admissions",
         ],
         "response": (
-            "Admission process usually has 4 steps: registration, document upload, "
-            "eligibility check, and fee payment after confirmation. Keep your 10th, "
-            "12th, ID proof, and transfer documents ready."
+            "![Campus View](/images/campus.png)\n\n"
+            "**Welcome to our prestigious university!** The admission process consists of 4 streamlined steps:\n"
+            "1. **Online Registration**\n"
+            "2. **Document Upload** (10th, 12th, ID proof, and transfer documents)\n"
+            "3. **Eligibility Verification**\n"
+            "4. **Fee Payment & Confirmation**\n\n"
+            "Our world-class campus awaits you!"
         ),
     },
     "fees": {
@@ -42,8 +46,14 @@ FAQ_RESPONSES = {
             "branch",
         ],
         "response": (
-            "Sample courses supported by this bot: B.Tech (CSE, IT, ECE, Mechanical, Civil), "
-            "BCA, BBA, MBA, MCA, and B.Sc programs. You can customize the list in the backend FAQ."
+            "![Campus View](/images/campus.png)\n\n"
+            "**Academic Programs**\n\n"
+            "We offer a wide array of industry-aligned programs designed to prepare you for the future:\n"
+            "- **B.Tech** (CSE, IT, ECE, Mechanical, Civil)\n"
+            "- **Management**: BBA, MBA\n"
+            "- **Computer Applications**: BCA, MCA\n"
+            "- **Sciences**: B.Sc Programs\n\n"
+            "All our courses feature state-of-the-art curriculum and world-class faculty."
         ),
     },
     "placement": {
@@ -81,8 +91,13 @@ FAQ_RESPONSES = {
             "residence",
         ],
         "response": (
-            "Hostel information for demo: separate hostels for boys and girls, Wi-Fi, mess, "
-            "security, common room, and transport support. Annual hostel plus mess fee can be customized."
+            "![Modern Hostel](/images/hostel.png)\n\n"
+            "**Premium Hostel Facilities**\n\n"
+            "Experience a home away from home with our ultra-modern hostels:\n"
+            "- Separate, secure blocks for boys and girls.\n"
+            "- High-speed Wi-Fi, 24/7 security, and power backup.\n"
+            "- Spacious common rooms and recreational areas.\n"
+            "- Nutritious and hygienic mess facilities included."
         ),
     },
     "library": {
@@ -94,8 +109,30 @@ FAQ_RESPONSES = {
             "digital library",
         ],
         "response": (
-            "Library demo response: central library with books, journals, digital resources, "
-            "and study area. Typical timing can be 8 AM to 8 PM."
+            "![University Library](/images/library.png)\n\n"
+            "**The Central Library**\n\n"
+            "Our massive, high-tech central library is the heart of academic life on campus:\n"
+            "- Over 100,000 physical books and millions of digital journals.\n"
+            "- Comfortable, quiet reading rooms with natural lighting.\n"
+            "- Open 8 AM to 10 PM daily for your convenience."
+        ),
+    },
+    "cafeteria": {
+        "keywords": [
+            "cafeteria",
+            "canteen",
+            "food",
+            "mess",
+            "eat",
+            "dining"
+        ],
+        "response": (
+            "![Campus Cafeteria](/images/cafeteria.png)\n\n"
+            "**Vibrant Cafeteria & Dining**\n\n"
+            "Our modern campus cafeteria offers a wide variety of delicious, hygienic, and affordable meals:\n"
+            "- Multi-cuisine food stations serving healthy options.\n"
+            "- Spacious, aesthetic seating areas filled with natural light.\n"
+            "- The perfect spot to relax and socialize between classes."
         ),
     },
     "contact": {

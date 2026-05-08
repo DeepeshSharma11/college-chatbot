@@ -11,8 +11,9 @@ from app.core.supabase_client import supabase
 
 class StorageService:
     def __init__(self) -> None:
+        backend = settings.STORAGE_BACKEND.lower()
         self.use_supabase = (
-            settings.STORAGE_BACKEND.lower() == "supabase" and supabase is not None
+            (backend == "supabase" or backend == "auto") and supabase is not None
         )
         self._lock = Lock()
         self._db_path = Path(settings.LOCAL_DB_PATH)
@@ -128,6 +129,22 @@ class StorageService:
             }
             for user in db["users"]
         ]
+
+    def get_messages_by_user(self, user_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        if self.use_supabase:
+            result = (
+                supabase.table("chat_messages")
+                .select("*")
+                .eq("user_id", user_id)
+                .order("created_at", desc=True)
+                .limit(limit)
+                .execute()
+            )
+            return result.data
+
+        db = self._load_local_db()
+        user_messages = [msg for msg in db["chat_messages"] if msg.get("user_id") == user_id]
+        return list(reversed(user_messages))[:limit]
 
     def list_messages(self, limit: int = 100) -> List[Dict[str, Any]]:
         if self.use_supabase:

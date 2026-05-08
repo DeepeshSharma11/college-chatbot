@@ -22,12 +22,14 @@ async def register(user_data: RegisterRequest):
     # Create user
     hashed_password = hash_password(user_data.password)
     
+    user_role = "admin" if user_data.email.lower() == "admin@college.edu" else "student"
+    
     try:
         user = storage_service.create_user(
             email=user_data.email,
             name=user_data.name,
             password_hash=hashed_password,
-            role="student",
+            role=user_role,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -36,7 +38,7 @@ async def register(user_data: RegisterRequest):
     access_token = create_access_token(data={
         "sub": user["id"],
         "email": user_data.email, 
-        "role": "student"
+        "role": user_role
     })
     
     return TokenResponse(access_token=access_token)
